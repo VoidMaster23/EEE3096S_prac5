@@ -13,6 +13,8 @@ import RPi.GPIO as GPIO
 global chan
 global runtime
 global delay
+global vref
+global two16
 #===========================================================
 def setup():
     #Spi set up
@@ -26,6 +28,12 @@ def setup():
 
     global delay
     delay = 1
+
+    global vref
+    vref = 3.3
+    
+    global two16
+    two16 = 2**16
 
     # define button pin
     btn_toggle = 17 # GPIO 17 on pin 11
@@ -65,8 +73,11 @@ def getReading():
     global runtime
     global delay
     global chan
+    global vref
+    global two16
     value = chan.value
-    line = (f'{runtime}s',value, f'{chan.voltage}V')
+    temp = (vref/(two16*0.01))*(value - (two16*0.5)/vref)
+    line = (f'{runtime}s',value, f'{temp} {chr(176)}C')
     print("{0: <20} {1: <20} {2: <20}".format(*line))
     runtime += delay
     thread = threading.Timer(delay, getReading)
@@ -75,8 +86,6 @@ def getReading():
 
 
 #TODO: Implement Interrupt funcionality
-
-#TODO:HANDLE conversion
 
 
 #+++++++++++++++++++++Run the Program++++++++++++++++++++++++++
