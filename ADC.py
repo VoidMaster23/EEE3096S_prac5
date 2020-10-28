@@ -13,9 +13,8 @@ import RPi.GPIO as GPIO
 global chan
 global runtime
 global delay
-
+global thread
 global count
-
 global vref
 global two16
 
@@ -72,7 +71,7 @@ def setup():
 #==============FUNCTIONS+++++++++++++++++++++++++++++++++++++
 # button handler
 def btn_toggle_pressed(channel):
-    print('pressed')
+    # count keeps track of how many times button has been pushed
     global count
     count = count + 1
 
@@ -91,29 +90,47 @@ def btn_toggle_pressed(channel):
         count = 0 # reset counter
 
 
-#Threaded function to get the reading every delay amount of seconds
+# function to process raw sensor data and print output
 def getReading():
     global runtime
-    global delay
     global chan
     global vref
     global two16
+
     value = chan.value
     temp = (vref/(two16*0.01))*(value - (two16*0.5)/vref)
     line = (f'{runtime}s',value, f'{temp} {chr(176)}C')
     print("{0: <20} {1: <20} {2: <20}".format(*line))
-    runtime += delay
-    thread = threading.Timer(delay, getReading)
+
+
+# function that executes threads based on current delay value
+def InterruptCurrentThread():
+    global runtime
+    global delay
+    global thread
+
+    # start timing since output has been displayed
+    start_time = time.time()
+
+    # initialised elapsed time variable
+    elapsed_time = time.time() - start_time
+
+    # wait until elapsed time is greater than the delay
+    while elapsed_time<delay:
+        elapsed_time = time.time() - start_time # update elapsed time
+
+    # start new thread that executes without any delay
+    thread = threading.Timer(0, getReading)
     thread.daemon = True
     thread.start()
 
-
-#TODO: Implement Interrupt funcionality
-
+    # update the runtime
+    runtime += delay
 
 #+++++++++++++++++++++Run the Program++++++++++++++++++++++++++
 if __name__ == "__main__":
    setup()
-   getReading()
+   getReading() # get first reading at 0 seconds
    while True:
-       pass
+       InterruptCurrentThread()
+
