@@ -9,6 +9,7 @@ from time import sleep
 import time, datetime, threading
 import RPi.GPIO as GPIO
 
+# define global variables
 global chan
 global runtime
 global delay
@@ -22,6 +23,7 @@ def setup():
 
     global runtime
     runtime = 0
+
     global delay
     delay = 1
 
@@ -37,10 +39,7 @@ def setup():
 #============================================================
 #Code
 
-#def btn_toggle_pressed(channel):
- #   print("pressed")
-
-    #create MCP
+   # create MCP
     mcp = MCP.MCP3008(spi, cs)
 
     #analog input channel
@@ -54,10 +53,12 @@ def setup():
     print("{0: <20} {1: <20} {2: <20}".format(*line))
 
 
+
+#==============FUNCTIONS+++++++++++++++++++++++++++++++++++++
+# button handler
 def btn_toggle_pressed(channel):
     print('pressed')
 
-#==============FUNCTIONS+++++++++++++++++++++++++++++++++++++
 
 #Threaded function to get the reading every delay amount of seconds
 def getReading():
