@@ -13,6 +13,7 @@ import RPi.GPIO as GPIO
 global chan
 global runtime
 global delay
+global count
 #===========================================================
 def setup():
     #Spi set up
@@ -24,8 +25,11 @@ def setup():
     global runtime
     runtime = 0
 
+    global count
+    count = 0 
+
     global delay
-    delay = 1
+    delay = 10
 
     # define button pin
     btn_toggle = 17 # GPIO 17 on pin 11
@@ -58,6 +62,22 @@ def setup():
 # button handler
 def btn_toggle_pressed(channel):
     print('pressed')
+    global count
+    count = count + 1
+
+    global delay
+    if count==0:
+        delay = 10
+
+    if count==1:
+        delay = 5
+
+    if count==2:
+        delay = 1
+
+    if count==3:
+        delay = 10 # revert to default delay
+        count = 0 # reset counter
 
 
 #Threaded function to get the reading every delay amount of seconds
