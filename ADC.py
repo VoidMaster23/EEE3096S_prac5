@@ -61,11 +61,11 @@ def setup():
     chan = AnalogIn(mcp, MCP.P0)
 
 
-    print(f'Raw ADC Value: {chan.value}')
-    print(f'ADC Voltage: {str(chan.voltage)} V')
+#    print(f'Raw ADC Value: {chan.value}')
+ #   print(f'ADC Voltage: {str(chan.voltage)} V')
     line =  ('Runtime',"Temp Reading", "Temp")
     print("{0: <20} {1: <20} {2: <20}".format(*line))
-
+    sleep(3)
 
 
 #==============FUNCTIONS+++++++++++++++++++++++++++++++++++++
@@ -119,13 +119,16 @@ def InterruptCurrentThread():
     while elapsed_time<delay:
         elapsed_time = time.time() - start_time # update elapsed time
 
+    # update runtime with correct delay
+    runtime = runtime + int(elapsed_time)
+
     # start new thread that executes without any delay
     thread = threading.Timer(0, getReading)
     thread.daemon = True
     thread.start()
 
     # update the runtime
-    runtime += delay
+    #runtime += delay
 
 #+++++++++++++++++++++Run the Program++++++++++++++++++++++++++
 if __name__ == "__main__":
